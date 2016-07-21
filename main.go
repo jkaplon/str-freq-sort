@@ -9,7 +9,23 @@ import (
      "github.com/yhat/scrape"
      "strings"
      "strconv"
+     "sort"
 )
+
+type CharFreq struct {
+    char string
+    freqCnt int
+}
+
+func (c CharFreq) String() string {
+    return fmt.Sprintf("%s: %d", c.char, c.freqCnt)
+}
+
+type ByFreqCntDesc []CharFreq
+
+func (a ByFreqCntDesc) Len() int           { return len(a) }
+func (a ByFreqCntDesc) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByFreqCntDesc) Less(i, j int) bool { return a[i].freqCnt > a[j].freqCnt }
 
 func handler (w http.ResponseWriter, r *http.Request) {
     log.Println("handler func received request: ", r.URL.Path)
@@ -52,7 +68,7 @@ func handler (w http.ResponseWriter, r *http.Request) {
     // The better way forward here is probably to define a struct to hold letters and counts.
     charsToCnt := strings.Split(codeElems[0], "")
     corpus := codeElems[1]
-    var counts []int
+    var charFreqs []CharFreq
 
     // Loop over slice w/ chars to get counts for; get a freq count of letter in corpus string;
     // Print results to web page for a sanity check.
@@ -60,11 +76,18 @@ func handler (w http.ResponseWriter, r *http.Request) {
     // (and because I've never played with goroutines before), but I quickly got lost in the semantics of channels, semaphores, etc.
     for i, char := range charsToCnt {
         log.Println("corpus cnt: " + string(len(corpus)))
-        counts = append(counts, strings.Count(corpus, char))
-        fmt.Fprintf(w, "cur char: " + char + ", " + strconv.Itoa(counts[i]) + "; ")
+        charFreqs = append(charFreqs, CharFreq{char, strings.Count(corpus, char)})
+        fmt.Fprintf(w, char + ", " + strconv.Itoa(charFreqs[i].freqCnt) + "; ")
     }
 
-    // order by freq cnt; 
+    fmt.Fprintf(w, "\n\n")
+
+    // Order by freq cnt, descending.
+    sort.Sort(ByFreqCntDesc(charFreqs))
+    for _, charFreq := range charFreqs {
+        fmt.Fprintf(w, charFreq.String())
+    }
+
     // drop all chars after (and including) the _ to get the secret word; print to page and stdout
 
     /*
