@@ -83,12 +83,17 @@ func handler (w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "\n\n")
 
     // Order by freq cnt, descending.
+    // drop all chars after (and including) the _ to get the secret word; print to page and stdout
     sort.Sort(ByFreqCntDesc(charFreqs))
+    var secretWord string
     for _, charFreq := range charFreqs {
+        if charFreq.char == "_" { break }
         fmt.Fprintf(w, charFreq.String())
+        secretWord = secretWord + charFreq.char
     }
 
-    // drop all chars after (and including) the _ to get the secret word; print to page and stdout
+    fmt.Fprintf(w, "\n\n" + secretWord)
+    fmt.Println(secretWord)
 
     /*
         TODO:
@@ -106,7 +111,6 @@ func main () {
     port := os.Getenv("PORT")
     if port == "" {
         log.Fatal("PORT environment variable was not set")
-    }
     err := http.ListenAndServe(":"+port, nil)
     if err != nil {
         log.Fatal("Could not listen: ", err)
