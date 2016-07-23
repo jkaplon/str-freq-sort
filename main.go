@@ -71,7 +71,6 @@ func getFreqCnts (codeElems[] string) string {
     var retStr string
 
     // Loop over slice w/ chars to get counts for; get a freq count of each letter in corpus string;
-    // Print results to web page for a sanity check.
     // I was hoping to start a goroutine for each iteration of this loop to gain benefit of concurrency
     // (and because I've never played with goroutines before), but I quickly got lost in the semantics of channels, semaphores, etc.
     for i, char := range charsToCnt {
