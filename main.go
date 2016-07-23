@@ -58,7 +58,7 @@ func scrapeAndParse() {
     f(root)
 }
 
-func getFreqCnts () string {
+func getFreqCnts (codeElems[] string) string {
     // Make some dicey assumptions about scraped elements here:
     // - 1st <code> tag will be the characters to get counts for
     // - 2nd <code> tag will be corpus to run freq count on
@@ -81,7 +81,7 @@ func getFreqCnts () string {
     return retStr
 }
 
-func sortAndTrim () string {
+func sortAndTrim (charFreqs[] CharFreq) string {
     // Order by freq cnt, descending.
     // drop all chars after (and including) the _ to get the secret word; print to page and stdout
     sort.Sort(ByFreqCntDesc(charFreqs))
@@ -100,10 +100,10 @@ func handler (w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, codeElems[0]+ "\n\n")
     fmt.Fprintf(w, codeElems[1]+ "\n\n")
 
-    initCnts := getFreqCnts()
+    initCnts := getFreqCnts(codeElems)
     fmt.Fprintf(w, initCnts + "\n\n")
 
-    secretWord := sortAndTrim()
+    secretWord := sortAndTrim(charFreqs)
     fmt.Fprintf(w, secretWord)
 }
 
@@ -115,8 +115,8 @@ func main () {
         // Blank port number expected if running non-dev-mode containter that just prints to stdout.
         scrapeAndParse()
         //fmt.Println(codeElems)
-        getFreqCnts()
-        secretWord := sortAndTrim()
+        getFreqCnts(codeElems)
+        secretWord := sortAndTrim(charFreqs)
         fmt.Println(secretWord)
         os.Exit(0)
         /*
