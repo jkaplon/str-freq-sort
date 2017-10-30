@@ -32,7 +32,7 @@ func (a ByFreqCntDesc) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByFreqCntDesc) Less(i, j int) bool { return a[i].freqCnt > a[j].freqCnt }
 func scrapeAndParse() {
 	// I could hard-code the strings and avoid getting this page every time...maybe later.
-	resp, err := http.Get("http://www.fogcreek.com/jobs/supportengineer")
+	resp, err := http.Get("http://www.fogcreek.com/jobs/supportengineerlevel2")
 	if err != nil {
 		panic(err)
 	}
